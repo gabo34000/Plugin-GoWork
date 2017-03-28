@@ -9,7 +9,7 @@ var include = function(url, callback) {
     document.getElementsByTagName('head')[0].appendChild(script);
 }
 
-
+localStorage['timer'] = 60;
 var tabUrl = [];
 var urls = "";
 var PrevTab = "";
@@ -29,55 +29,39 @@ function newTab(fenetre, tab) {
             if (tab.url.indexOf(".com") > 0) {
                 var nb = tab.url.indexOf(".com");
                 t = tab.url.substring(0, nb + 4);
-                alert("t " + t);
             } else if (tab.url.indexOf(".eu") > 0) {
                 var nb = tab.url.indexOf(".eu");
                 t = tab.url.substring(0, nb + 3);
-                alert("t " + t);
             } else if (tab.url.indexOf(".fr") > 0) {
                 var nb = tab.url.indexOf(".fr");
                 t = tab.url.substring(0, nb + 3);
-                alert("t " + t);
             } else {
-                alert(tab.url);
+                // alert(tab.url);
             }
-            //            tabUrl.push(t);
-            alert(tabUrl[tabUrl.length - 1]);
             if (tabUrl.length != 0) {
-                alert("tab +");
-                if (tabUrl[tabUrl.length - 1] == t) {
-                    alert("il ya qq chose");
-                    //                localStorage['cpt'] = 60;
-                } else {
-                    alert("else push");
+                if (tabUrl[tabUrl.length - 1] == t) {} else {
                     tabUrl.push(t);
-                    localStorage['cpt'] = 20;
+                    localStorage['cpt'] = parseInt(localStorage['timer']); // 20;
                 }
             } else {
-                alert("First url");
                 tabUrl.push(t);
-                localStorage['cpt'] = 20;
-                //              aler("clear interval");
-                //                clearInterval(rpt);
+                localStorage['cpt'] = parseInt(localStorage['timer']); //20;
             }
-
             // checkHowManyTimes() elle va checker combien de temps l'utilisateur reste sur la page
         }
     }
 }
-
-//localStorage['cpt'] = 20;
 
 
 function cpt() //appellée toute les 2 secondes
 {
     localStorage['cpt'] = parseInt(localStorage['cpt']) - 2; // -2 car c'est toutes les 2 secondes
     if (parseInt(localStorage['cpt']) <= 0) {
-        alert("cpt fini " + t + "!");
-        if (tabUrl[tabUrl.length - 1] == t)
+        //alert("cpt fini " + t + "!");
+        if (tabUrl[tabUrl.length - 1] == t) {
             alert("GO TO WORK !!!");
-        //clearInterval(rpt); //on arrète le compte à rebours 
-        //        newTab();
+            t = "";
+        }
     }
 }
 var rpt = setInterval(cpt, 2000); //toutes les 2 secondes -> ne pas surcharger le navigateur
