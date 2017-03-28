@@ -1,7 +1,7 @@
 {
-    "name": "PlugIn-Upto",
+    "name": "GoWork",
     "version": "1.0",
-    "description": "je fais des tests pour upto",
+    "description": "It's an extension chrome that every 20 sec get the url, if you are on the same site during 10minuts, send a message.",
     "manifest_version": 2,
     "permissions": ["unlimitedStorage", "background", "tabs", "<all_urls>"],
     "options_page": "options.html",
@@ -10,5 +10,5 @@
     },
     "background": {
         "page": "background.html"
-	}
+    }
 }

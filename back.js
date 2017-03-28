@@ -1,58 +1,89 @@
-//https://dashboard.emailjs.com/
-
 var include = function(url, callback) {
-
-    /* on crée une balise<script type="text/javascript"></script> */
     var script = document.createElement('script');
     script.type = 'text/javascript';
-
-    /* On fait pointer la balise sur le script qu'on veut charger
-       avec en prime un timestamp pour éviter les problèmes de cache
-    */
-
     script.src = url + '?' + (new Date().getTime());
-
-    /* On dit d'exécuter cette fonction une fois que le script est chargé */
     if (callback) {
         script.onreadystatechange = callback;
         script.onload = script.onreadystatechange;
     }
-
-    /* On rajoute la balise script dans le head, ce qui démarre le téléchargement */
     document.getElementsByTagName('head')[0].appendChild(script);
 }
 
 
 var tabUrl = [];
 var urls = "";
-//chrome.windows.create({ url: "http://www.siteduzero.com" }) // charger une window
-function newTab(fenetre, tab) { //check sur quelle page nous sommes si c'est youtube la dupliquer sinon alert l'url de la page
-    if (!fenetre) // premier appel : aucun paramètre existant
-    {
-        chrome.windows.getLastFocused(function(fenetre) { newTab(fenetre); }); //on demande la fenêtre visible
+var PrevTab = "";
+var t = "";
+
+function newTab(fenetre, tab) {
+    t = "";
+    if (!fenetre) {
+        chrome.windows.getLastFocused(function(fenetre) { newTab(fenetre); });
     } else {
-        if (!tab) // deuxième appel : 1 paramètre existant (fenetre)
-        {
-            chrome.tabs.getSelected(fenetre.id, function(tab) { newTab(fenetre, tab); }); //on demande la fenêtre visible, et on appelle la fonction une deuxième fois
-        } else // troisième appel : 2 paramètres existants (fenetre et tab)
-        {
+        if (!tab) {
+            chrome.tabs.getSelected(fenetre.id, function(tab) {
+                newTab(fenetre, tab);
+            });
+        } else { //parsing pour découper l'url jusqu'au .fr, .com ou .eu
             url = tab.url;
-            //      alert(tab.url.indexOf(".com"));
             if (tab.url.indexOf(".com") > 0) {
-                //            alert("ok");
                 var nb = tab.url.indexOf(".com");
-                //              alert("nb" + nb);
-                var t = tab.url.substring(0, nb - 1);
-                //                alert("test " + t);
+                t = tab.url.substring(0, nb + 4);
+                alert("t " + t);
+            } else if (tab.url.indexOf(".eu") > 0) {
+                var nb = tab.url.indexOf(".eu");
+                t = tab.url.substring(0, nb + 3);
+                alert("t " + t);
+            } else if (tab.url.indexOf(".fr") > 0) {
+                var nb = tab.url.indexOf(".fr");
+                t = tab.url.substring(0, nb + 3);
+                alert("t " + t);
+            } else {
+                alert(tab.url);
             }
-            tabUrl.push(tab.url);
-            //    alert("tab.;url " + tabUrl);
-            takePhoto(tab, null /*tab, tab.url*/ );
-            //          } else
-            //            alert(tab.url);
+            //            tabUrl.push(t);
+            alert(tabUrl[tabUrl.length - 1]);
+            if (tabUrl.length != 0) {
+                alert("tab +");
+                if (tabUrl[tabUrl.length - 1] == t) {
+                    alert("il ya qq chose");
+                    //                localStorage['cpt'] = 60;
+                } else {
+                    alert("else push");
+                    tabUrl.push(t);
+                    localStorage['cpt'] = 20;
+                }
+            } else {
+                alert("First url");
+                tabUrl.push(t);
+                localStorage['cpt'] = 20;
+                //              aler("clear interval");
+                //                clearInterval(rpt);
+            }
+
+            // checkHowManyTimes() elle va checker combien de temps l'utilisateur reste sur la page
         }
     }
 }
+
+//localStorage['cpt'] = 20;
+
+
+function cpt() //appellée toute les 2 secondes
+{
+    localStorage['cpt'] = parseInt(localStorage['cpt']) - 2; // -2 car c'est toutes les 2 secondes
+    if (parseInt(localStorage['cpt']) <= 0) {
+        alert("cpt fini " + t + "!");
+        if (tabUrl[tabUrl.length - 1] == t)
+            alert("GO TO WORK !!!");
+        //clearInterval(rpt); //on arrète le compte à rebours 
+        //        newTab();
+    }
+}
+var rpt = setInterval(cpt, 2000); //toutes les 2 secondes -> ne pas surcharger le navigateur
+
+
+
 
 function takePhoto(tab, adresse) { // l'adresse est l'url de la tab a screenshot 
     if (!adresse) {
@@ -83,7 +114,6 @@ function takePhoto(tab, adresse) { // l'adresse est l'url de la tab a screenshot
   //  code à exécuter une fois que le script est chargé
 })*/
         tabUrl = [];
-        //	  document.getElementById("conteneur").innerHTML = '<img src="' + adresse + '" alt="riendutout"/>';
     }
 }
 
@@ -92,11 +122,9 @@ function decompter() //appellée toute les 2 secondes
 {
     localStorage['decompte'] = parseInt(localStorage['decompte']) - 2; // -2 car c'est toutes les 2 secondes
     if (parseInt(localStorage['decompte']) <= 0) {
-        //clearInterval(repetition); //on arrète le compte à rebours
-        // alert("FINi !!!!"); 
+        //clearInterval(repetition); //on arrète le compte à rebours 
         newTab();
         localStorage['decompte'] = 10;
-        //		localStorage['decompte'] = 1440* 60;
     }
 }
 var repetition = setInterval(decompter, 2000); //toutes les 2 secondes -> ne pas surcharger le navigateur
